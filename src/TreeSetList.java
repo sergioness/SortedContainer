@@ -44,9 +44,25 @@ public class TreeSetList<T extends Comparable<? super T>> implements ISortedCont
 
     @Override
     public void remove(T element) {
-        LinkedList<T> list = tree.remove(element);
-        if (list != null && !list.isEmpty())
-            tree.put(list.poll(), list);
+        Map.Entry<T, LinkedList<T>> entry = tree.floorEntry(element);
+        if (entry == null)
+            return;
+        T entryKey = entry.getKey();
+        LinkedList<T> entryValue;
+        if (entryKey.equals(element)) {
+            entryValue = tree.remove(element);
+            T head = entryValue.poll();
+            if (head != null)
+                tree.put(head, entryValue);
+        } else {
+            entryValue = entry.getValue();
+            if (entryValue != null && !entryValue.isEmpty())
+                for (T el : entryValue)
+                    if (el.equals(element)) {
+                        entryValue.remove(element);
+                        return;
+                    }
+        }
     }
 
     @Override
@@ -74,7 +90,6 @@ public class TreeSetList<T extends Comparable<? super T>> implements ISortedCont
             if (value != null && !value.isEmpty()) {
                 if (element.equals(ceiling.getKey()))
                     return value.peek();
-                /*
                 else {
                     // traverse list to find appropriate value that greater than the given
                     T that;
@@ -83,10 +98,9 @@ public class TreeSetList<T extends Comparable<? super T>> implements ISortedCont
                         if (it.next().equals(element))
                             break;
                     that = it.hasNext() ? it.next() : null;
-                    if(that != null)
+                    if (that != null)
                         return that;
                 }
-                */
             }
             return tree.higherKey(element);
         }
@@ -95,7 +109,34 @@ public class TreeSetList<T extends Comparable<? super T>> implements ISortedCont
 
     @Override
     public T prev(T element) {
-        return tree.lowerKey(element);
+        Map.Entry<T, LinkedList<T>> floor = tree.floorEntry(element);
+        if (floor == null)
+            return null;
+        int cmp;
+        if (comparator == null)
+            cmp = element.compareTo(floor.getKey());
+        else
+            cmp = comparator.compare(floor.getKey(), element);
+        if (cmp == 0) {
+            LinkedList<T> value = floor.getValue();
+            if (value != null && !value.isEmpty()) {
+                if (element.equals(floor.getKey()))
+                    return tree.lowerKey(element);
+                else {
+                    // traverse list to find appropriate value that smaller than the given
+                    T that;
+                    ListIterator<T> it = value.listIterator();
+                    while (it.hasNext())
+                        if (it.next().equals(element))
+                            break;
+                    it.previous();
+                    that = it.hasPrevious() ? it.previous() : floor.getKey();
+                    return that;
+                }
+            }
+            return tree.lowerKey(element);
+        }
+        return floor.getKey();
     }
 
     @Override
