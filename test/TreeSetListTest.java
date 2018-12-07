@@ -46,6 +46,38 @@ public class TreeSetListTest {
         Assert.assertEquals("TreeSetList{, 0, z1, z2, z3, ab, zzz, abc, wtf, 111, 444, long}", treeSetList.toString());
     }
 
+    @Test
+    public void same(){
+        TreeSet<StringLen> treeSet = new TreeSet<>(new Comparator<StringLen>() {
+            @Override
+            public int compare(StringLen o1, StringLen o2) {
+                int cmp = o1.compareTo(o2);
+                if (cmp == 0)
+                    if (o1.equals(o2))
+                        return 0;
+                    else
+                        return 1;
+                else
+                    return cmp;
+            }
+        });
+
+        treeSet.add(new StringLen("z1"));
+        treeSet.add(new StringLen("z2"));
+        treeSet.add(new StringLen("z3"));
+        treeSet.add(new StringLen("zzz"));
+        treeSet.add(new StringLen("abc"));
+        StringLen wtf = new StringLen("wtf");
+        treeSet.add(wtf);
+        treeSet.add(new StringLen("ab"));
+        treeSet.add(new StringLen("111"));
+        treeSet.add(new StringLen("0"));
+        treeSet.add(new StringLen(""));
+        treeSet.add(new StringLen("444"));
+        treeSet.add(new StringLen("long"));
+
+        assertEquals("111", treeSet.higher(wtf).toString());
+    }
 
 
     @Test
@@ -98,6 +130,18 @@ public class TreeSetListTest {
         System.out.println(prev);
 
         Assert.assertEquals("z3", prev.toString());
+    }
+
+    @Test
+    public void prev3(){
+        ISortedContainer<StringLen> container = new TreeSetList<>();
+        StringLen zero = new StringLen("0");
+        StringLen z1 = new StringLen("z1");
+        container.add(zero);
+        container.add(z1);
+        print(container);
+        StringLen prev = container.prev(z1);
+        Assert.assertEquals("0", prev.toString());
     }
 
     @Test

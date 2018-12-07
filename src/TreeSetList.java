@@ -145,10 +145,10 @@ public class TreeSetList<T extends Comparable<? super T>> implements ISortedCont
                 if(lower == null)
                     return null;
                 value = lower.getValue();
-                if(value == null)
-                    return lower.getKey();
-                else
+                if(value != null && !value.isEmpty())
                     return value.peekLast();
+                else
+                    return lower.getKey();
             }
         }
         return floor.getKey();
