@@ -10,10 +10,10 @@ public class TreeSetListTest {
 
     private ISortedContainer<StringLen> container;
 
-    private void print() {
+    private <T extends Comparable<? super T>> void print(ISortedContainer<T> container) {
         StringBuilder temp = new StringBuilder();
         temp.append("TreeSetList{");
-        for (StringLen el : container.asList())
+        for (T el : container.asList())
             temp.append(el).append(", ");
         temp.append("}");
         temp.replace(temp.length() - 3, temp.length() - 1, "");
@@ -45,6 +45,8 @@ public class TreeSetListTest {
         TreeSetList<StringLen> treeSetList = (TreeSetList<StringLen>) container;
         Assert.assertEquals("TreeSetList{, 0, z1, z2, z3, ab, zzz, abc, wtf, 111, 444, long}", treeSetList.toString());
     }
+
+
 
     @Test
     public void remove() {
@@ -80,6 +82,25 @@ public class TreeSetListTest {
     }
 
     @Test
+    public void prev2() {
+        ISortedContainer<StringLen> container = new TreeSetList<>();
+
+        StringLen z2 = new StringLen("z2");
+        StringLen z3 = new StringLen("z3");
+        StringLen zzz = new StringLen("zzz");
+        container.add(z2);
+        container.add(z3);
+        container.add(zzz);
+
+        print(container);
+
+        StringLen prev = container.prev(zzz);
+        System.out.println(prev);
+
+        Assert.assertEquals("z3", prev.toString());
+    }
+
+    @Test
     public void asList() {
         SortedSet<StringLen> control = new TreeSet<>(new Comparator<StringLen>() {
             @Override
@@ -109,4 +130,5 @@ public class TreeSetListTest {
         List<StringLen> controlSet = new ArrayList<>(control);
         Assert.assertEquals(controlSet, container.asList());
     }
+
 }
