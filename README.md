@@ -1,2 +1,2 @@
 # SortedContainer
-Kind of high-performance container, using Java TreeMap
+An implementation of a high-performance container, using Java TreeMap
